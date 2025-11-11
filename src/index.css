@@ -8,39 +8,82 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    /* HDH Note Dark Theme - Grok/AI Inspired */
-    --background: 215 28% 7%;
-    --foreground: 210 40% 98%;
+    /* Light Mode - Spotify Inspired */
+    --background: 0 0% 100%;
+    --foreground: 0 0% 9%;
 
-    --card: 217 33% 10%;
-    --card-foreground: 210 40% 98%;
+    --card: 0 0% 98%;
+    --card-foreground: 0 0% 9%;
 
-    --popover: 217 33% 10%;
-    --popover-foreground: 210 40% 98%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 9%;
 
-    --primary: 173 80% 40%;
-    --primary-foreground: 210 40% 98%;
+    --primary: 142 76% 36%;
+    --primary-foreground: 0 0% 98%;
 
-    --secondary: 217 33% 15%;
-    --secondary-foreground: 210 40% 98%;
+    --secondary: 0 0% 96%;
+    --secondary-foreground: 0 0% 9%;
 
-    --muted: 217 33% 15%;
-    --muted-foreground: 215 20% 65%;
+    --muted: 0 0% 96%;
+    --muted-foreground: 0 0% 45%;
 
-    --accent: 173 80% 40%;
-    --accent-foreground: 210 40% 98%;
+    --accent: 142 76% 36%;
+    --accent-foreground: 0 0% 98%;
 
     --destructive: 0 84% 60%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive-foreground: 0 0% 98%;
 
-    --border: 217 33% 17%;
-    --input: 217 33% 17%;
-    --ring: 173 80% 40%;
+    --border: 0 0% 90%;
+    --input: 0 0% 90%;
+    --ring: 142 76% 36%;
+
+    --sidebar: 0 0% 98%;
+    --sidebar-foreground: 0 0% 9%;
+    --sidebar-border: 0 0% 90%;
+    --sidebar-accent: 142 76% 36%;
+    --sidebar-accent-foreground: 0 0% 98%;
 
     --radius: 0.5rem;
 
     /* Transitions */
     --transition-smooth: all 0.2s ease-in-out;
+  }
+
+  .dark {
+    /* Dark Mode - Spotify Inspired with Green Accent */
+    --background: 0 0% 7%;
+    --foreground: 0 0% 98%;
+
+    --card: 0 0% 10%;
+    --card-foreground: 0 0% 98%;
+
+    --popover: 0 0% 10%;
+    --popover-foreground: 0 0% 98%;
+
+    --primary: 142 76% 36%;
+    --primary-foreground: 0 0% 98%;
+
+    --secondary: 0 0% 15%;
+    --secondary-foreground: 0 0% 98%;
+
+    --muted: 0 0% 15%;
+    --muted-foreground: 0 0% 65%;
+
+    --accent: 142 76% 36%;
+    --accent-foreground: 0 0% 98%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 0 0% 17%;
+    --input: 0 0% 17%;
+    --ring: 142 76% 36%;
+
+    --sidebar: 0 0% 4%;
+    --sidebar-foreground: 0 0% 98%;
+    --sidebar-border: 0 0% 17%;
+    --sidebar-accent: 142 76% 36%;
+    --sidebar-accent-foreground: 0 0% 98%;
   }
 }
 

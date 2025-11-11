@@ -1,157 +1,197 @@
-import { useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
-import { Button } from "@/components/ui/button";
-import { ArrowLeft, Edit, Calendar, Clock } from "lucide-react";
-
-// Mock data - trong thực tế sẽ fetch từ API
-const mockNoteData: { [key: string]: any } = {
-  "1": {
-    title: "Giới thiệu về React Hooks",
-    content: `React Hooks là một tính năng được giới thiệu trong React 16.8, cho phép bạn sử dụng state và các tính năng khác của React mà không cần viết class component.
-
-## Các Hooks cơ bản
-
-### useState
-Hook này cho phép bạn thêm React state vào function components. Đây là cách sử dụng cơ bản:
-
-\`\`\`javascript
-const [count, setCount] = useState(0);
-\`\`\`
-
-### useEffect
-Hook này cho phép bạn thực hiện side effects trong function components. Nó kết hợp lifecycle methods như componentDidMount, componentDidUpdate, và componentWillUnmount.
-
-\`\`\`javascript
-useEffect(() => {
-  document.title = \`You clicked \${count} times\`;
-}, [count]);
-\`\`\`
-
-## Lợi ích của Hooks
-
-1. **Code ngắn gọn hơn**: Không cần viết class và các phương thức lifecycle phức tạp
-2. **Dễ tái sử dụng logic**: Custom Hooks giúp chia sẻ logic giữa các components
-3. **Dễ test hơn**: Function components dễ test hơn class components
-4. **Performance tốt hơn**: React có thể tối ưu hóa function components tốt hơn
-
-## Kết luận
-
-React Hooks là một bước tiến lớn trong cách chúng ta viết React components. Nó giúp code trở nên sạch sẽ, dễ hiểu và dễ bảo trì hơn.`,
-    createdAt: "15/11/2025",
-    readTime: "8 phút"
-  }
-};
+import { useParams, Link, useNavigate } from 'react-router-dom';
+import { ArrowLeft, Edit, Calendar, Clock, CheckCircle, Trash2 } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { useState } from 'react';
+import { useToast } from '@/hooks/use-toast';
 
 const NoteDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const [isLoggedIn] = useState(false); // Mock state
+  const { toast } = useToast();
+  const [isCompleted, setIsCompleted] = useState(false);
 
-  const note = mockNoteData[id || "1"] || mockNoteData["1"];
+  const mockNote = {
+    id,
+    title: 'Giới thiệu về React Hooks',
+    date: '15/11/2025',
+    readTime: '8 phút',
+    content: `React Hooks là một tính năng mới trong React 16.8 cho phép bạn sử dụng state và các tính năng khác của React mà không cần viết class.
+
+## Tại sao cần Hooks?
+
+Trước đây, nếu bạn bắt đầu viết một function component và sau đó nhận ra bạn cần thêm state vào nó, bạn phải chuyển nó thành class. Bây giờ, bạn có thể sử dụng Hook bên trong function component hiện có.
+
+## useState Hook
+
+\`useState\` là một Hook cho phép bạn thêm React state vào function component.
+
+\`\`\`javascript
+import React, { useState } from 'react';
+
+function Example() {
+  const [count, setCount] = useState(0);
+  
+  return (
+    <div>
+      <p>Bạn đã click {count} lần</p>
+      <button onClick={() => setCount(count + 1)}>
+        Click me
+      </button>
+    </div>
+  );
+}
+\`\`\`
+
+## useEffect Hook
+
+\`useEffect\` cho phép bạn thực hiện side effects trong function components:
+
+- Fetching dữ liệu
+- Thiết lập subscriptions
+- Thay đổi DOM
+
+## Kết luận
+
+React Hooks giúp code của bạn sạch hơn và dễ đọc hơn. Nó loại bỏ sự cần thiết của các classes trong nhiều trường hợp.`,
+  };
+
+  const handleMarkComplete = () => {
+    setIsCompleted(!isCompleted);
+    toast({
+      title: isCompleted ? 'Đánh dấu chưa hoàn thành' : 'Đánh dấu hoàn thành',
+      description: 'Trạng thái ghi chú đã được cập nhật.',
+    });
+  };
+
+  const handleDelete = () => {
+    toast({
+      title: 'Đã xóa ghi chú',
+      description: 'Ghi chú đã được xóa thành công.',
+      variant: 'destructive',
+    });
+    navigate('/');
+  };
+
+  const renderContent = (text: string) => {
+    const lines = text.split('\n');
+    let inCodeBlock = false;
+    let codeLanguage = '';
+
+    return lines.map((line, index) => {
+      // Code blocks
+      if (line.startsWith('```')) {
+        if (!inCodeBlock) {
+          codeLanguage = line.slice(3).trim();
+          inCodeBlock = true;
+          return null;
+        } else {
+          inCodeBlock = false;
+          return null;
+        }
+      }
+
+      if (inCodeBlock) {
+        return (
+          <div key={index} className="bg-muted p-4 rounded-lg font-mono text-sm overflow-x-auto my-2">
+            <code className="text-foreground">{line}</code>
+          </div>
+        );
+      }
+
+      // Headers
+      if (line.startsWith('## ')) {
+        return (
+          <h2 key={index} className="text-2xl font-mono font-bold text-foreground mt-8 mb-4">
+            {line.slice(3)}
+          </h2>
+        );
+      }
+
+      // Lists
+      if (line.startsWith('- ')) {
+        return (
+          <li key={index} className="text-foreground ml-6 mb-2">
+            {line.slice(2)}
+          </li>
+        );
+      }
+
+      // Inline code
+      const codeRegex = /`([^`]+)`/g;
+      const parts = line.split(codeRegex);
+      const rendered = parts.map((part, i) =>
+        i % 2 === 1 ? (
+          <code key={i} className="bg-muted px-2 py-1 rounded text-accent font-mono text-sm">
+            {part}
+          </code>
+        ) : (
+          part
+        )
+      );
+
+      // Regular paragraph
+      return (
+        <p key={index} className="text-foreground mb-4 leading-relaxed">
+          {rendered}
+        </p>
+      );
+    });
+  };
 
   return (
-    <div className="min-h-screen flex flex-col">
-      <Header isLoggedIn={isLoggedIn} />
-      
-      <main className="flex-1 container mx-auto px-4 py-8">
-        <div className="max-w-4xl mx-auto">
-          {/* Back Button */}
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => navigate("/")}
-            className="mb-6 gap-2"
-          >
+    <div className="max-w-4xl mx-auto">
+      {/* Header */}
+      <div className="flex items-center justify-between mb-8">
+        <Link to="/">
+          <Button variant="ghost" className="gap-2 text-muted-foreground hover:text-accent">
             <ArrowLeft className="h-4 w-4" />
             Quay lại
           </Button>
-
-          {/* Note Header */}
-          <div className="mb-8 space-y-4">
-            <div className="flex items-start justify-between gap-4">
-              <h1 className="text-4xl md:text-5xl font-bold font-mono text-primary">
-                {note.title}
-              </h1>
-              {isLoggedIn && (
-                <Button variant="outline" size="sm" className="gap-2 shrink-0">
-                  <Edit className="h-4 w-4" />
-                  Sửa
-                </Button>
-              )}
-            </div>
-
-            <div className="flex items-center gap-4 text-sm text-muted-foreground">
-              <div className="flex items-center gap-1.5">
-                <Calendar className="h-4 w-4" />
-                <span>{note.createdAt}</span>
-              </div>
-              <div className="flex items-center gap-1.5">
-                <Clock className="h-4 w-4" />
-                <span>{note.readTime} đọc</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Note Content */}
-          <article className="prose prose-invert prose-lg max-w-none">
-            <div 
-              className="space-y-6 text-foreground leading-relaxed"
-              style={{ whiteSpace: 'pre-line' }}
-            >
-              {note.content.split('\n\n').map((paragraph: string, index: number) => {
-                // Handle headings
-                if (paragraph.startsWith('## ')) {
-                  return (
-                    <h2 key={index} className="text-2xl font-bold font-mono text-primary mt-8 mb-4">
-                      {paragraph.replace('## ', '')}
-                    </h2>
-                  );
-                }
-                if (paragraph.startsWith('### ')) {
-                  return (
-                    <h3 key={index} className="text-xl font-bold font-mono text-primary mt-6 mb-3">
-                      {paragraph.replace('### ', '')}
-                    </h3>
-                  );
-                }
-                
-                // Handle code blocks
-                if (paragraph.startsWith('```')) {
-                  const code = paragraph.replace(/```\w*\n?/g, '');
-                  return (
-                    <pre key={index} className="bg-secondary p-4 rounded-lg overflow-x-auto border border-border">
-                      <code className="text-sm font-mono">{code}</code>
-                    </pre>
-                  );
-                }
-
-                // Handle lists
-                if (paragraph.match(/^\d+\./m)) {
-                  const items = paragraph.split('\n').filter(line => line.trim());
-                  return (
-                    <ol key={index} className="list-decimal list-inside space-y-2 text-foreground">
-                      {items.map((item, i) => (
-                        <li key={i}>{item.replace(/^\d+\.\s*/, '')}</li>
-                      ))}
-                    </ol>
-                  );
-                }
-
-                // Regular paragraph
-                return (
-                  <p key={index} className="text-foreground">
-                    {paragraph}
-                  </p>
-                );
-              })}
-            </div>
-          </article>
+        </Link>
+        <div className="flex gap-2">
+          <Button
+            onClick={handleMarkComplete}
+            className={`gap-2 ${
+              isCompleted 
+                ? 'bg-muted hover:bg-muted/90' 
+                : 'bg-accent hover:bg-accent/90'
+            } text-accent-foreground`}
+          >
+            <CheckCircle className="h-4 w-4" />
+            {isCompleted ? 'Đã hoàn thành' : 'Đánh dấu hoàn thành'}
+          </Button>
+          <Link to={`/edit/${id}`}>
+            <Button variant="outline" className="gap-2 border-accent text-accent hover:bg-accent hover:text-accent-foreground">
+              <Edit className="h-4 w-4" />
+              Sửa
+            </Button>
+          </Link>
+          <Button
+            onClick={handleDelete}
+            variant="outline"
+            className="gap-2 border-destructive text-destructive hover:bg-destructive hover:text-destructive-foreground"
+          >
+            <Trash2 className="h-4 w-4" />
+            Xóa
+          </Button>
         </div>
-      </main>
+      </div>
 
-      <Footer />
+      {/* Note Content */}
+      <article className="bg-card rounded-lg border border-border p-8 shadow-sm">
+        <h1 className="text-4xl font-mono font-bold text-foreground mb-4">{mockNote.title}</h1>
+        <div className="flex items-center gap-4 text-sm text-muted-foreground mb-8 pb-8 border-b border-border">
+          <div className="flex items-center gap-1">
+            <Calendar className="h-4 w-4" />
+            <span>{mockNote.date}</span>
+          </div>
+          <div className="flex items-center gap-1">
+            <Clock className="h-4 w-4" />
+            <span>{mockNote.readTime}</span>
+          </div>
+        </div>
+        <div className="prose prose-lg max-w-none">{renderContent(mockNote.content)}</div>
+      </article>
     </div>
   );
 };

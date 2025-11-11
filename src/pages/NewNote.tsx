@@ -1,139 +1,110 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { PenSquare, Save } from "lucide-react";
-import { toast } from "sonner";
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { Calendar } from '@/components/ui/calendar';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { CalendarIcon, Save } from 'lucide-react';
+import { format } from 'date-fns';
+import { vi } from 'date-fns/locale';
+import { useToast } from '@/hooks/use-toast';
 
 const NewNote = () => {
   const navigate = useNavigate();
-  const [isLoggedIn] = useState(true); // Mock state
-  const [formData, setFormData] = useState({
-    title: "",
-    summary: "",
-    content: ""
-  });
-  const [isLoading, setIsLoading] = useState(false);
+  const { toast } = useToast();
+  const [title, setTitle] = useState('');
+  const [excerpt, setExcerpt] = useState('');
+  const [content, setContent] = useState('');
+  const [date, setDate] = useState<Date>();
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    setIsLoading(true);
-
-    // Mock save logic
-    setTimeout(() => {
-      setIsLoading(false);
-      toast.success("Ghi chú đã được đăng thành công!");
-      navigate("/");
-    }, 1000);
-  };
-
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
-    setFormData({
-      ...formData,
-      [e.target.id]: e.target.value
+    toast({
+      title: 'Tạo ghi chú thành công',
+      description: 'Ghi chú của bạn đã được lưu.',
     });
+    navigate('/');
   };
 
   return (
-    <div className="min-h-screen flex flex-col">
-      <Header isLoggedIn={isLoggedIn} />
-      
-      <main className="flex-1 container mx-auto px-4 py-8">
-        <div className="max-w-4xl mx-auto">
-          <Card>
-            <CardHeader className="space-y-3">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
-                  <PenSquare className="h-5 w-5 text-primary" />
-                </div>
-                <div>
-                  <CardTitle className="text-2xl font-mono">Viết ghi chú mới</CardTitle>
-                  <CardDescription>
-                    Chia sẻ kiến thức và ý tưởng của bạn
-                  </CardDescription>
-                </div>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <form onSubmit={handleSubmit} className="space-y-6">
-                <div className="space-y-2">
-                  <Label htmlFor="title" className="text-base">
-                    Tiêu đề <span className="text-destructive">*</span>
-                  </Label>
-                  <Input
-                    id="title"
-                    type="text"
-                    placeholder="Nhập tiêu đề ghi chú..."
-                    value={formData.title}
-                    onChange={handleChange}
-                    required
-                    className="bg-secondary text-lg"
-                  />
-                </div>
+    <div className="max-w-4xl mx-auto">
+      <div className="mb-8">
+        <h1 className="text-3xl font-mono font-bold text-foreground mb-2">Viết Note mới</h1>
+        <p className="text-muted-foreground">Tạo ghi chú mới cho công việc của bạn</p>
+      </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="summary" className="text-base">
-                    Tóm tắt <span className="text-destructive">*</span>
-                  </Label>
-                  <Textarea
-                    id="summary"
-                    placeholder="Viết tóm tắt ngắn gọn về ghi chú..."
-                    value={formData.summary}
-                    onChange={handleChange}
-                    required
-                    className="bg-secondary min-h-[80px] resize-none"
-                    maxLength={200}
-                  />
-                  <p className="text-xs text-muted-foreground text-right">
-                    {formData.summary.length}/200 ký tự
-                  </p>
-                </div>
+      <div className="bg-card rounded-lg border border-border p-8 shadow-sm">
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div className="space-y-2">
+            <Label htmlFor="title" className="text-foreground">Tiêu đề</Label>
+            <Input
+              id="title"
+              type="text"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              placeholder="Nhập tiêu đề ghi chú..."
+              className="bg-background border-border"
+              required
+            />
+          </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="content" className="text-base">
-                    Nội dung <span className="text-destructive">*</span>
-                  </Label>
-                  <Textarea
-                    id="content"
-                    placeholder="Viết nội dung ghi chú của bạn ở đây...&#10;&#10;Hỗ trợ Markdown:&#10;## Tiêu đề&#10;**in đậm**&#10;```code```"
-                    value={formData.content}
-                    onChange={handleChange}
-                    required
-                    className="bg-secondary min-h-[400px] font-mono"
-                  />
-                </div>
+          <div className="space-y-2">
+            <Label htmlFor="excerpt" className="text-foreground">Tóm tắt</Label>
+            <Textarea
+              id="excerpt"
+              value={excerpt}
+              onChange={(e) => setExcerpt(e.target.value)}
+              placeholder="Viết tóm tắt ngắn gọn..."
+              className="bg-background border-border resize-none"
+              rows={3}
+              required
+            />
+          </div>
 
-                <div className="flex gap-3 pt-4">
-                  <Button
-                    type="submit"
-                    className="gap-2"
-                    disabled={isLoading}
-                  >
-                    <Save className="h-4 w-4" />
-                    {isLoading ? "Đang đăng..." : "Đăng ghi chú"}
-                  </Button>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={() => navigate("/")}
-                  >
-                    Hủy
-                  </Button>
-                </div>
-              </form>
-            </CardContent>
-          </Card>
-        </div>
-      </main>
+          <div className="space-y-2">
+            <Label htmlFor="content" className="text-foreground">Nội dung</Label>
+            <Textarea
+              id="content"
+              value={content}
+              onChange={(e) => setContent(e.target.value)}
+              placeholder="Viết nội dung ghi chú..."
+              className="min-h-[300px] bg-background border-border resize-none"
+              required
+            />
+          </div>
 
-      <Footer />
+          <div className="space-y-2">
+            <Label className="text-foreground">Gắn vào ngày (tùy chọn)</Label>
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  className="w-full justify-start text-left font-normal bg-background border-border"
+                >
+                  <CalendarIcon className="mr-2 h-4 w-4" />
+                  {date ? format(date, 'PPP', { locale: vi }) : <span>Chọn ngày</span>}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0" align="start">
+                <Calendar
+                  mode="single"
+                  selected={date}
+                  onSelect={setDate}
+                  initialFocus
+                  className="pointer-events-auto"
+                />
+              </PopoverContent>
+            </Popover>
+          </div>
+
+          <Button type="submit" className="w-full bg-accent hover:bg-accent/90 text-accent-foreground">
+            <Save className="h-4 w-4 mr-2" />
+            Đăng Note
+          </Button>
+        </form>
+      </div>
     </div>
   );
 };
