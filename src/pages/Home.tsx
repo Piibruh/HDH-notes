@@ -56,6 +56,7 @@ const Home = () => {
       </div>
 
       {/* Notes Grid */}
+      <h2 className="text-2xl font-mono font-semibold text-foreground mb-6">Ghi chú của bạn</h2>
       {filteredNotes.length === 0 ? (
         <div className="text-center py-12 bg-card rounded-lg border border-border">
           <p className="text-muted-foreground">
