@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -12,6 +12,7 @@ import { useToast } from '@/hooks/use-toast';
 import RichTextEditor from '@/components/RichTextEditor';
 import { useNotes } from '@/contexts/NotesContext';
 import { Link } from 'react-router-dom';
+import { useAutoSave } from '@/hooks/useAutoSave';
 
 const EditNote = () => {
   const { id } = useParams();
@@ -24,6 +25,7 @@ const EditNote = () => {
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [date, setDate] = useState<Date>();
+  const [hasChanges, setHasChanges] = useState(false);
 
   useEffect(() => {
     if (note) {
@@ -42,6 +44,41 @@ const EditNote = () => {
     }
   }, [note, navigate, toast]);
 
+  // Auto-save function
+  const autoSave = useCallback(() => {
+    if (!note || !hasChanges) return;
+    
+    const excerpt = content.replace(/<[^>]*>/g, '').substring(0, 150);
+    
+    updateNote(note.id, {
+      title,
+      content,
+      excerpt,
+      linkedDate: date ? format(date, 'yyyy-MM-dd') : undefined,
+    });
+
+    setHasChanges(false);
+  }, [note, title, content, date, updateNote, hasChanges]);
+
+  // Enable auto-save with 2 second delay
+  useAutoSave({
+    data: { title, content, date },
+    onSave: autoSave,
+    delay: 2000,
+    enabled: hasChanges && !!note,
+  });
+
+  // Track changes
+  useEffect(() => {
+    if (note) {
+      const titleChanged = title !== note.title;
+      const contentChanged = content !== note.content;
+      const dateChanged = date ? format(date, 'yyyy-MM-dd') !== note.linkedDate : !!note.linkedDate;
+      
+      setHasChanges(titleChanged || contentChanged || dateChanged);
+    }
+  }, [title, content, date, note]);
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!note) return;
@@ -55,9 +92,11 @@ const EditNote = () => {
       linkedDate: date ? format(date, 'yyyy-MM-dd') : undefined,
     });
 
+    setHasChanges(false);
+    
     toast({
       title: 'Cập nhật thành công',
-      description: 'Ghi chú đã được cập nhật.',
+      description: 'Ghi chú đã được lưu.',
     });
     navigate(`/note/${note.id}`);
   };
@@ -69,7 +108,9 @@ const EditNote = () => {
       <div className="mb-8 flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-mono font-bold text-foreground mb-2">Chỉnh sửa ghi chú</h1>
-          <p className="text-muted-foreground">Cập nhật nội dung ghi chú của bạn</p>
+          <p className="text-muted-foreground">
+            {hasChanges ? 'Đang tự động lưu...' : 'Đã lưu tự động'}
+          </p>
         </div>
         <Link to={`/note/${id}`}>
           <Button variant="ghost" className="gap-2">

@@ -5,6 +5,10 @@ import TextAlign from '@tiptap/extension-text-align';
 import { TextStyle } from '@tiptap/extension-text-style';
 import { Color } from '@tiptap/extension-color';
 import { FontFamily } from '@tiptap/extension-font-family';
+import Link from '@tiptap/extension-link';
+import Image from '@tiptap/extension-image';
+import Placeholder from '@tiptap/extension-placeholder';
+import { useEffect, useState, useCallback } from 'react';
 import { 
   Bold, 
   Italic, 
@@ -20,9 +24,15 @@ import {
   Heading1,
   Heading2,
   Quote,
-  Code
+  Code,
+  Link as LinkIcon,
+  Image as ImageIcon,
+  X
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { cn } from '@/lib/utils';
 
 interface RichTextEditorProps {
@@ -32,6 +42,11 @@ interface RichTextEditorProps {
 }
 
 const RichTextEditor = ({ content, onChange, placeholder }: RichTextEditorProps) => {
+  const [showLinkDialog, setShowLinkDialog] = useState(false);
+  const [showImageDialog, setShowImageDialog] = useState(false);
+  const [linkUrl, setLinkUrl] = useState('');
+  const [imageUrl, setImageUrl] = useState('');
+
   const editor = useEditor({
     extensions: [
       StarterKit.configure({
@@ -48,6 +63,20 @@ const RichTextEditor = ({ content, onChange, placeholder }: RichTextEditorProps)
       FontFamily.configure({
         types: ['textStyle'],
       }),
+      Link.configure({
+        openOnClick: false,
+        HTMLAttributes: {
+          class: 'text-primary underline cursor-pointer',
+        },
+      }),
+      Image.configure({
+        HTMLAttributes: {
+          class: 'max-w-full h-auto rounded-lg',
+        },
+      }),
+      Placeholder.configure({
+        placeholder: placeholder || 'Bắt đầu viết ghi chú của bạn...',
+      }),
     ],
     content,
     onUpdate: ({ editor }) => {
@@ -59,6 +88,41 @@ const RichTextEditor = ({ content, onChange, placeholder }: RichTextEditorProps)
       },
     },
   });
+
+  // Update editor content when content prop changes
+  useEffect(() => {
+    if (editor && content !== editor.getHTML()) {
+      editor.commands.setContent(content);
+    }
+  }, [content, editor]);
+
+  const handleSetLink = useCallback(() => {
+    if (linkUrl === '') {
+      editor?.chain().focus().extendMarkRange('link').unsetLink().run();
+    } else {
+      editor?.chain().focus().extendMarkRange('link').setLink({ href: linkUrl }).run();
+    }
+    setShowLinkDialog(false);
+    setLinkUrl('');
+  }, [editor, linkUrl]);
+
+  const handleInsertImage = useCallback(() => {
+    if (imageUrl) {
+      editor?.chain().focus().setImage({ src: imageUrl }).run();
+    }
+    setShowImageDialog(false);
+    setImageUrl('');
+  }, [editor, imageUrl]);
+
+  const openLinkDialog = useCallback(() => {
+    const previousUrl = editor?.getAttributes('link').href || '';
+    setLinkUrl(previousUrl);
+    setShowLinkDialog(true);
+  }, [editor]);
+
+  const removeLink = useCallback(() => {
+    editor?.chain().focus().unsetLink().run();
+  }, [editor]);
 
   if (!editor) {
     return null;
@@ -91,9 +155,10 @@ const RichTextEditor = ({ content, onChange, placeholder }: RichTextEditorProps)
   );
 
   return (
-    <div className="border border-border rounded-lg bg-card">
-      {/* Toolbar */}
-      <div className="border-b border-border p-2 flex flex-wrap gap-1 bg-muted/50">
+    <>
+      <div className="border border-border rounded-lg bg-card">
+        {/* Toolbar */}
+        <div className="border-b border-border p-2 flex flex-wrap gap-1 bg-muted/50">
         <ToolbarButton
           onClick={() => editor.chain().focus().undo().run()}
           title="Hoàn tác"
@@ -215,6 +280,30 @@ const RichTextEditor = ({ content, onChange, placeholder }: RichTextEditorProps)
 
         <div className="w-px h-8 bg-border mx-1" />
 
+        <ToolbarButton
+          onClick={openLinkDialog}
+          isActive={editor.isActive('link')}
+          title="Chèn liên kết"
+        >
+          <LinkIcon className="h-4 w-4" />
+        </ToolbarButton>
+        {editor.isActive('link') && (
+          <ToolbarButton
+            onClick={removeLink}
+            title="Xóa liên kết"
+          >
+            <X className="h-4 w-4" />
+          </ToolbarButton>
+        )}
+        <ToolbarButton
+          onClick={() => setShowImageDialog(true)}
+          title="Chèn hình ảnh"
+        >
+          <ImageIcon className="h-4 w-4" />
+        </ToolbarButton>
+
+        <div className="w-px h-8 bg-border mx-1" />
+
         <select
           onChange={(e) => {
             if (e.target.value === 'default') {
@@ -253,15 +342,78 @@ const RichTextEditor = ({ content, onChange, placeholder }: RichTextEditorProps)
         </select>
       </div>
 
-      {/* Editor Content */}
-      <EditorContent editor={editor} className="prose-headings:text-foreground prose-p:text-foreground prose-strong:text-foreground prose-em:text-foreground prose-code:text-foreground prose-blockquote:text-muted-foreground prose-ul:text-foreground prose-ol:text-foreground" />
-      
-      {!content && placeholder && (
-        <div className="absolute top-[60px] left-4 text-muted-foreground pointer-events-none">
-          {placeholder}
-        </div>
-      )}
-    </div>
+        {/* Editor Content */}
+        <EditorContent editor={editor} className="prose-headings:text-foreground prose-p:text-foreground prose-strong:text-foreground prose-em:text-foreground prose-code:text-foreground prose-blockquote:text-muted-foreground prose-ul:text-foreground prose-ol:text-foreground prose-a:text-primary prose-img:my-4" />
+      </div>
+
+      {/* Link Dialog */}
+      <Dialog open={showLinkDialog} onOpenChange={setShowLinkDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Chèn liên kết</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="link-url">URL</Label>
+              <Input
+                id="link-url"
+                type="url"
+                placeholder="https://example.com"
+                value={linkUrl}
+                onChange={(e) => setLinkUrl(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    handleSetLink();
+                  }
+                }}
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowLinkDialog(false)}>
+              Hủy
+            </Button>
+            <Button onClick={handleSetLink}>
+              Chèn
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Image Dialog */}
+      <Dialog open={showImageDialog} onOpenChange={setShowImageDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Chèn hình ảnh</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="image-url">URL hình ảnh</Label>
+              <Input
+                id="image-url"
+                type="url"
+                placeholder="https://example.com/image.jpg"
+                value={imageUrl}
+                onChange={(e) => setImageUrl(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    handleInsertImage();
+                  }
+                }}
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowImageDialog(false)}>
+              Hủy
+            </Button>
+            <Button onClick={handleInsertImage}>
+              Chèn
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 };
 
