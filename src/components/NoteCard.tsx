@@ -49,6 +49,7 @@ export const NoteCard = ({
             onCheckedChange={handleToggle}
             className="data-[state=checked]:bg-accent"
             disabled={isCompleting}
+            aria-label="Đánh dấu hoàn thành"
           />
         </div>
       </div>
