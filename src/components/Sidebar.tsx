@@ -1,4 +1,4 @@
-import { Home, Calendar, CheckSquare, User, Lock, PlusCircle, LogOut, Sun, Moon, Menu } from 'lucide-react';
+import { Home, Calendar, CheckSquare, User, PlusCircle, LogOut, Sun, Moon, Menu } from 'lucide-react';
 import { NavLink } from './NavLink';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useUser } from '@/contexts/UserContext';
@@ -19,7 +19,7 @@ export const Sidebar = () => {
       title: 'Đăng xuất thành công',
       description: 'Hẹn gặp lại bạn!',
     });
-    navigate('/login');
+    navigate('/welcome');
   };
 
   const menuItems = [
@@ -27,8 +27,7 @@ export const Sidebar = () => {
     { to: '/new-note', label: 'Viết Note', icon: PlusCircle },
     { to: '/calendar', label: 'Lịch', icon: Calendar },
     { to: '/completed', label: 'Đã hoàn thành', icon: CheckSquare },
-    { to: '/profile', label: 'Thông tin cá nhân', icon: User },
-    { to: '/change-password', label: 'Đổi mật khẩu', icon: Lock },
+    { to: '/profile', label: 'Cài đặt', icon: User },
   ];
 
   return (

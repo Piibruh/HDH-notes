@@ -4,61 +4,13 @@ import { Input } from '@/components/ui/input';
 import { NoteCard } from '@/components/NoteCard';
 import { useToast } from '@/hooks/use-toast';
 import { useUser } from '@/contexts/UserContext';
+import { useNotes } from '@/contexts/NotesContext';
 
 const Home = () => {
   const { toast } = useToast();
   const { user } = useUser();
+  const { notes, toggleComplete } = useNotes();
   const [searchQuery, setSearchQuery] = useState('');
-  const [notes, setNotes] = useState([
-    {
-      id: 1,
-      title: 'Giới thiệu về React Hooks',
-      excerpt: 'React Hooks là một tính năng mới trong React 16.8 cho phép bạn sử dụng state và các tính năng khác của React mà không cần viết class.',
-      date: '15/11/2025',
-      readTime: '8 phút',
-      completed: false,
-    },
-    {
-      id: 2,
-      title: 'TypeScript Best Practices',
-      excerpt: 'Các phương pháp hay nhất khi làm việc với TypeScript để tạo code an toàn và dễ bảo trì hơn.',
-      date: '14/11/2025',
-      readTime: '6 phút',
-      completed: false,
-    },
-    {
-      id: 3,
-      title: 'Tailwind CSS Tips & Tricks',
-      excerpt: 'Khám phá những mẹo và thủ thuật hữu ích khi sử dụng Tailwind CSS để tạo giao diện đẹp và hiệu quả.',
-      date: '13/11/2025',
-      readTime: '5 phút',
-      completed: false,
-    },
-    {
-      id: 4,
-      title: 'Git Workflow cho Team',
-      excerpt: 'Hướng dẫn quy trình làm việc với Git hiệu quả cho các dự án nhóm, từ branching đến pull requests.',
-      date: '12/11/2025',
-      readTime: '10 phút',
-      completed: false,
-    },
-    {
-      id: 5,
-      title: 'REST API Design Principles',
-      excerpt: 'Các nguyên tắc thiết kế REST API chuẩn và dễ sử dụng cho các ứng dụng web hiện đại.',
-      date: '11/11/2025',
-      readTime: '7 phút',
-      completed: false,
-    },
-    {
-      id: 6,
-      title: 'Database Optimization Techniques',
-      excerpt: 'Tối ưu hóa hiệu suất database với các kỹ thuật indexing, query optimization và caching.',
-      date: '10/11/2025',
-      readTime: '12 phút',
-      completed: false,
-    },
-  ]);
 
   const filteredNotes = notes.filter(
     (note) =>
@@ -67,14 +19,10 @@ const Home = () => {
   );
 
   const handleToggleComplete = (id: number) => {
-    setNotes(notes.map(note => 
-      note.id === id 
-        ? { ...note, completed: !note.completed } 
-        : note
-    ));
+    toggleComplete(id);
     toast({
-      title: 'Cập nhật thành công',
-      description: 'Trạng thái ghi chú đã được thay đổi.',
+      title: 'Đã chuyển sang hoàn thành',
+      description: 'Ghi chú đã được chuyển vào mục đã hoàn thành.',
     });
   };
 

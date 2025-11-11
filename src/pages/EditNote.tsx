@@ -1,31 +1,54 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { CalendarIcon, Save } from 'lucide-react';
+import { CalendarIcon, Save, ArrowLeft } from 'lucide-react';
 import { format } from 'date-fns';
 import { vi } from 'date-fns/locale';
 import { useToast } from '@/hooks/use-toast';
 import RichTextEditor from '@/components/RichTextEditor';
 import { useNotes } from '@/contexts/NotesContext';
+import { Link } from 'react-router-dom';
 
-const NewNote = () => {
+const EditNote = () => {
+  const { id } = useParams();
   const navigate = useNavigate();
   const { toast } = useToast();
-  const { addNote } = useNotes();
+  const { notes, updateNote } = useNotes();
+  
+  const note = notes.find(n => n.id === Number(id));
+  
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [date, setDate] = useState<Date>();
 
+  useEffect(() => {
+    if (note) {
+      setTitle(note.title);
+      setContent(note.content);
+      if (note.linkedDate) {
+        setDate(new Date(note.linkedDate));
+      }
+    } else {
+      toast({
+        title: 'Không tìm thấy ghi chú',
+        description: 'Ghi chú không tồn tại.',
+        variant: 'destructive',
+      });
+      navigate('/');
+    }
+  }, [note, navigate, toast]);
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
+    if (!note) return;
+
     const excerpt = content.replace(/<[^>]*>/g, '').substring(0, 150);
     
-    addNote({
+    updateNote(note.id, {
       title,
       content,
       excerpt,
@@ -33,17 +56,27 @@ const NewNote = () => {
     });
 
     toast({
-      title: 'Tạo ghi chú thành công',
-      description: 'Ghi chú của bạn đã được lưu.',
+      title: 'Cập nhật thành công',
+      description: 'Ghi chú đã được cập nhật.',
     });
-    navigate('/');
+    navigate(`/note/${note.id}`);
   };
+
+  if (!note) return null;
 
   return (
     <div className="max-w-4xl mx-auto">
-      <div className="mb-8">
-        <h1 className="text-3xl font-mono font-bold text-foreground mb-2">Viết Note mới</h1>
-        <p className="text-muted-foreground">Tạo ghi chú mới cho công việc của bạn</p>
+      <div className="mb-8 flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-mono font-bold text-foreground mb-2">Chỉnh sửa ghi chú</h1>
+          <p className="text-muted-foreground">Cập nhật nội dung ghi chú của bạn</p>
+        </div>
+        <Link to={`/note/${id}`}>
+          <Button variant="ghost" className="gap-2">
+            <ArrowLeft className="h-4 w-4" />
+            Quay lại
+          </Button>
+        </Link>
       </div>
 
       <div className="bg-card rounded-lg border border-border p-8 shadow-sm">
@@ -66,7 +99,7 @@ const NewNote = () => {
             <RichTextEditor
               content={content}
               onChange={setContent}
-              placeholder="Bắt đầu viết nội dung ghi chú của bạn..."
+              placeholder="Chỉnh sửa nội dung ghi chú của bạn..."
             />
           </div>
 
@@ -96,7 +129,7 @@ const NewNote = () => {
 
           <Button type="submit" className="w-full bg-accent hover:bg-accent/90 text-accent-foreground">
             <Save className="h-4 w-4 mr-2" />
-            Đăng Note
+            Lưu thay đổi
           </Button>
         </form>
       </div>
@@ -104,4 +137,4 @@ const NewNote = () => {
   );
 };
 
-export default NewNote;
+export default EditNote;

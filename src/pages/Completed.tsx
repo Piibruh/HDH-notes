@@ -3,46 +3,20 @@ import { RotateCcw, Trash2, Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
-
-interface CompletedNote {
-  id: number;
-  title: string;
-  excerpt: string;
-  completedDate: string;
-}
+import { useNotes } from '@/contexts/NotesContext';
 
 const Completed = () => {
   const { toast } = useToast();
+  const { completedNotes, restoreNote, permanentDelete } = useNotes();
   const [searchQuery, setSearchQuery] = useState('');
-  
-  const [notes, setNotes] = useState<CompletedNote[]>([
-    {
-      id: 1,
-      title: 'Hoàn thành dự án React',
-      excerpt: 'Đã hoàn tất việc phát triển giao diện người dùng cho dự án.',
-      completedDate: '2025-01-10',
-    },
-    {
-      id: 2,
-      title: 'Học Tailwind CSS',
-      excerpt: 'Nắm vững các khái niệm cơ bản và nâng cao của Tailwind.',
-      completedDate: '2025-01-08',
-    },
-    {
-      id: 3,
-      title: 'Đọc sách về TypeScript',
-      excerpt: 'Đã đọc xong 5 chương đầu tiên về TypeScript fundamentals.',
-      completedDate: '2025-01-05',
-    },
-  ]);
 
-  const filteredNotes = notes.filter((note) =>
+  const filteredNotes = completedNotes.filter((note) =>
     note.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
     note.excerpt.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   const handleRestore = (id: number) => {
-    setNotes(notes.filter((note) => note.id !== id));
+    restoreNote(id);
     toast({
       title: 'Đã khôi phục',
       description: 'Ghi chú đã được khôi phục về danh sách chính.',
@@ -50,7 +24,7 @@ const Completed = () => {
   };
 
   const handleDelete = (id: number) => {
-    setNotes(notes.filter((note) => note.id !== id));
+    permanentDelete(id);
     toast({
       title: 'Đã xóa vĩnh viễn',
       description: 'Ghi chú đã được xóa khỏi hệ thống.',
@@ -100,7 +74,7 @@ const Completed = () => {
                   </h3>
                   <p className="text-muted-foreground mb-3 line-through">{note.excerpt}</p>
                   <p className="text-sm text-muted-foreground">
-                    Hoàn thành: {new Date(note.completedDate).toLocaleDateString('vi-VN')}
+                    Hoàn thành: {note.date}
                   </p>
                 </div>
 

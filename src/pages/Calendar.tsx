@@ -1,16 +1,23 @@
 import { useState } from 'react';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight, FileText } from 'lucide-react';
+import { useNotes } from '@/contexts/NotesContext';
+import { Link } from 'react-router-dom';
 
 const Calendar = () => {
   const [currentDate, setCurrentDate] = useState(new Date());
+  const [selectedDate, setSelectedDate] = useState<string | null>(null);
+  const { notes } = useNotes();
 
-  // Mock data: notes by date (format: YYYY-MM-DD)
-  const notesData: Record<string, number> = {
-    '2025-01-15': 2,
-    '2025-01-18': 1,
-    '2025-01-22': 3,
-    '2025-01-25': 1,
-  };
+  // Group notes by date
+  const notesData: Record<string, typeof notes> = {};
+  notes.forEach(note => {
+    if (note.linkedDate) {
+      if (!notesData[note.linkedDate]) {
+        notesData[note.linkedDate] = [];
+      }
+      notesData[note.linkedDate].push(note);
+    }
+  });
 
   const getDaysInMonth = (date: Date) => {
     const year = date.getFullYear();
@@ -99,7 +106,8 @@ const Calendar = () => {
           {Array.from({ length: daysInMonth }).map((_, index) => {
             const day = index + 1;
             const dateKey = getDateKey(day);
-            const hasNotes = notesData[dateKey];
+            const dayNotes = notesData[dateKey] || [];
+            const hasNotes = dayNotes.length > 0;
             const isToday =
               day === new Date().getDate() &&
               currentDate.getMonth() === new Date().getMonth() &&
@@ -108,11 +116,14 @@ const Calendar = () => {
             return (
               <button
                 key={day}
+                onClick={() => setSelectedDate(hasNotes ? dateKey : null)}
                 className={`aspect-square rounded-lg border transition-all ${
                   isToday
                     ? 'border-accent bg-accent/10'
                     : 'border-border hover:border-accent/50'
-                } ${hasNotes ? 'bg-muted' : 'bg-card'}`}
+                } ${hasNotes ? 'bg-muted cursor-pointer' : 'bg-card'} ${
+                  selectedDate === dateKey ? 'ring-2 ring-accent' : ''
+                }`}
               >
                 <div className="flex flex-col items-center justify-center h-full">
                   <span
@@ -124,7 +135,7 @@ const Calendar = () => {
                   </span>
                   {hasNotes && (
                     <div className="flex gap-1 mt-1">
-                      {Array.from({ length: Math.min(hasNotes, 3) }).map((_, i) => (
+                      {Array.from({ length: Math.min(dayNotes.length, 3) }).map((_, i) => (
                         <div
                           key={i}
                           className="w-1.5 h-1.5 rounded-full bg-accent"
@@ -152,6 +163,30 @@ const Calendar = () => {
           </div>
         </div>
       </div>
+
+      {/* Notes for Selected Date */}
+      {selectedDate && notesData[selectedDate] && (
+        <div className="mt-8 bg-card rounded-lg border border-border p-6 shadow-sm">
+          <h2 className="text-xl font-mono font-bold text-foreground mb-4">
+            Ghi chú ngày {new Date(selectedDate).toLocaleDateString('vi-VN')}
+          </h2>
+          <div className="space-y-3">
+            {notesData[selectedDate].map((note) => (
+              <Link
+                key={note.id}
+                to={`/note/${note.id}`}
+                className="flex items-center gap-3 p-4 bg-muted rounded-lg hover:bg-accent/10 transition-colors border border-border"
+              >
+                <FileText className="h-5 w-5 text-accent flex-shrink-0" />
+                <div className="flex-1">
+                  <h3 className="font-mono font-semibold text-foreground">{note.title}</h3>
+                  <p className="text-sm text-muted-foreground line-clamp-1">{note.excerpt}</p>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 };
