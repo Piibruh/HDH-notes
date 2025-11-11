@@ -4,18 +4,38 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Sparkles } from 'lucide-react';
+import { useUser } from '@/contexts/UserContext';
+import { useToast } from '@/hooks/use-toast';
 
 const Login = () => {
   const navigate = useNavigate();
+  const { login } = useUser();
+  const { toast } = useToast();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    login({
+      name: email.split('@')[0],
+      email: email,
+    });
+    toast({
+      title: 'Đăng nhập thành công',
+      description: 'Chào mừng bạn trở lại!',
+    });
     navigate('/');
   };
 
   const handleDemoLogin = () => {
+    login({
+      name: 'Người dùng Demo',
+      email: 'demo@hdhnote.com',
+    });
+    toast({
+      title: 'Đăng nhập Demo',
+      description: 'Đã đăng nhập với tài khoản demo.',
+    });
     navigate('/');
   };
 

@@ -1,19 +1,29 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { User, Mail, Save } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
+import { useUser } from '@/contexts/UserContext';
 
 const Profile = () => {
   const { toast } = useToast();
+  const { user, updateUser } = useUser();
   const [formData, setFormData] = useState({
-    name: 'Người dùng Demo',
-    email: 'demo@hdhnote.com',
+    name: user.name,
+    email: user.email,
   });
+
+  useEffect(() => {
+    setFormData({
+      name: user.name,
+      email: user.email,
+    });
+  }, [user]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    updateUser(formData);
     toast({
       title: 'Cập nhật thành công',
       description: 'Thông tin cá nhân đã được cập nhật.',

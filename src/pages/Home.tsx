@@ -3,9 +3,11 @@ import { Search, TrendingUp } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { NoteCard } from '@/components/NoteCard';
 import { useToast } from '@/hooks/use-toast';
+import { useUser } from '@/contexts/UserContext';
 
 const Home = () => {
   const { toast } = useToast();
+  const { user } = useUser();
   const [searchQuery, setSearchQuery] = useState('');
   const [notes, setNotes] = useState([
     {
@@ -83,7 +85,7 @@ const Home = () => {
         <div className="flex items-center gap-3 mb-3">
           <TrendingUp className="h-8 w-8 text-accent" />
           <h1 className="text-4xl font-mono font-bold text-foreground">
-            Chào mừng trở lại, <span className="text-accent">Người dùng</span>!
+            Chào mừng trở lại, <span className="text-accent">{user.name}</span>!
           </h1>
         </div>
         <p className="text-lg text-muted-foreground">

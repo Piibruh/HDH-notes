@@ -3,19 +3,18 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { CalendarIcon, Save } from 'lucide-react';
 import { format } from 'date-fns';
 import { vi } from 'date-fns/locale';
 import { useToast } from '@/hooks/use-toast';
+import RichTextEditor from '@/components/RichTextEditor';
 
 const NewNote = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [title, setTitle] = useState('');
-  const [excerpt, setExcerpt] = useState('');
   const [content, setContent] = useState('');
   const [date, setDate] = useState<Date>();
 
@@ -51,27 +50,11 @@ const NewNote = () => {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="excerpt" className="text-foreground">Tóm tắt</Label>
-            <Textarea
-              id="excerpt"
-              value={excerpt}
-              onChange={(e) => setExcerpt(e.target.value)}
-              placeholder="Viết tóm tắt ngắn gọn..."
-              className="bg-background border-border resize-none"
-              rows={3}
-              required
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="content" className="text-foreground">Nội dung</Label>
-            <Textarea
-              id="content"
-              value={content}
-              onChange={(e) => setContent(e.target.value)}
-              placeholder="Viết nội dung ghi chú..."
-              className="min-h-[300px] bg-background border-border resize-none"
-              required
+            <Label className="text-foreground">Nội dung</Label>
+            <RichTextEditor
+              content={content}
+              onChange={setContent}
+              placeholder="Bắt đầu viết nội dung ghi chú của bạn..."
             />
           </div>
 

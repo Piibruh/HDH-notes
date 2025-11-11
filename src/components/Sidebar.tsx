@@ -1,11 +1,26 @@
 import { Home, Calendar, CheckSquare, User, Lock, PlusCircle, LogOut, Sun, Moon, Menu } from 'lucide-react';
 import { NavLink } from './NavLink';
 import { useTheme } from '@/contexts/ThemeContext';
+import { useUser } from '@/contexts/UserContext';
+import { useNavigate } from 'react-router-dom';
+import { useToast } from '@/hooks/use-toast';
 import { useState } from 'react';
 
 export const Sidebar = () => {
   const { theme, toggleTheme } = useTheme();
+  const { logout } = useUser();
+  const navigate = useNavigate();
+  const { toast } = useToast();
   const [isOpen, setIsOpen] = useState(false);
+
+  const handleLogout = () => {
+    logout();
+    toast({
+      title: 'Đăng xuất thành công',
+      description: 'Hẹn gặp lại bạn!',
+    });
+    navigate('/login');
+  };
 
   const menuItems = [
     { to: '/', label: 'Dashboard', icon: Home },
@@ -73,7 +88,10 @@ export const Sidebar = () => {
             )}
           </button>
 
-          <button className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sidebar-foreground hover:bg-muted transition-colors mt-2">
+          <button
+            onClick={handleLogout}
+            className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sidebar-foreground hover:bg-muted transition-colors mt-2"
+          >
             <LogOut className="h-5 w-5" />
             <span className="font-medium">Đăng xuất</span>
           </button>
