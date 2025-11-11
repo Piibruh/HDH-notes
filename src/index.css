@@ -101,3 +101,26 @@ All colors MUST be HSL.
     font-family: 'JetBrains Mono', monospace;
   }
 }
+
+@layer utilities {
+  @keyframes complete-note {
+    0% {
+      transform: scale(1);
+      opacity: 1;
+    }
+    30% {
+      transform: scale(0.98);
+    }
+    50% {
+      opacity: 0.7;
+    }
+    100% {
+      transform: scale(0.95) translateX(100%);
+      opacity: 0;
+    }
+  }
+
+  .animate-complete-note {
+    animation: complete-note 0.6s ease-out forwards;
+  }
+}

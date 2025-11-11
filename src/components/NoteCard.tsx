@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { Calendar, Clock } from 'lucide-react';
 import { Switch } from '@/components/ui/switch';
+import { useState } from 'react';
 
 interface NoteCardProps {
   id: number;
@@ -21,10 +22,19 @@ export const NoteCard = ({
   completed = false,
   onToggleComplete 
 }: NoteCardProps) => {
+  const [isCompleting, setIsCompleting] = useState(false);
+
+  const handleToggle = () => {
+    setIsCompleting(true);
+    setTimeout(() => {
+      onToggleComplete?.();
+    }, 600);
+  };
+
   return (
     <div className={`bg-card rounded-lg border border-border p-6 hover:shadow-lg transition-all ${
-      completed ? 'opacity-75' : ''
-    }`}>
+      isCompleting ? 'animate-complete-note' : ''
+    } ${completed ? 'opacity-75' : ''}`}>
       <div className="flex items-start justify-between mb-3">
         <Link to={`/note/${id}`} className="flex-1">
           <h3 className={`text-xl font-mono font-semibold text-foreground hover:text-accent transition-colors ${
@@ -36,8 +46,9 @@ export const NoteCard = ({
         <div className="flex items-center gap-2 ml-4">
           <Switch
             checked={completed}
-            onCheckedChange={onToggleComplete}
+            onCheckedChange={handleToggle}
             className="data-[state=checked]:bg-accent"
+            disabled={isCompleting}
           />
         </div>
       </div>
