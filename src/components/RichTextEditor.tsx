@@ -53,6 +53,7 @@ const RichTextEditor = ({ content, onChange, placeholder }: RichTextEditorProps)
         heading: {
           levels: [1, 2, 3],
         },
+        link: false, // Disable default link to use custom Link extension
       }),
       Underline,
       TextAlign.configure({
