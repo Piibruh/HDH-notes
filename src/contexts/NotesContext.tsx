@@ -8,6 +8,7 @@ export interface Note {
   date: string;
   readTime: string;
   completed: boolean;
+  author?: string; // Author name
   linkedDate?: string; // For calendar
 }
 
@@ -33,6 +34,7 @@ const getDefaultNotes = (): Note[] => [
     date: new Date().toLocaleDateString('vi-VN'),
     readTime: '12 phút',
     completed: false,
+    author: 'DLL Team',
     linkedDate: '2025-01-15',
   },
   {
@@ -43,6 +45,7 @@ const getDefaultNotes = (): Note[] => [
     date: new Date().toLocaleDateString('vi-VN'),
     readTime: '10 phút',
     completed: false,
+    author: 'DLL Team',
   },
   {
     id: 3,
@@ -52,6 +55,7 @@ const getDefaultNotes = (): Note[] => [
     date: new Date().toLocaleDateString('vi-VN'),
     readTime: '15 phút',
     completed: false,
+    author: 'DLL Team',
     linkedDate: '2025-01-20',
   },
   {
@@ -62,6 +66,7 @@ const getDefaultNotes = (): Note[] => [
     date: new Date().toLocaleDateString('vi-VN'),
     readTime: '18 phút',
     completed: false,
+    author: 'DLL Team',
   },
   {
     id: 5,
@@ -71,6 +76,7 @@ const getDefaultNotes = (): Note[] => [
     date: new Date().toLocaleDateString('vi-VN'),
     readTime: '14 phút',
     completed: false,
+    author: 'DLL Team',
     linkedDate: '2025-01-25',
   },
   {
@@ -81,6 +87,7 @@ const getDefaultNotes = (): Note[] => [
     date: new Date().toLocaleDateString('vi-VN'),
     readTime: '16 phút',
     completed: false,
+    author: 'DLL Team',
   },
 ];
 
