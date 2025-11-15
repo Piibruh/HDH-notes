@@ -110,7 +110,7 @@ const Index = () => {
             <h2 className="text-2xl font-mono font-bold text-foreground">Đội ngũ phát triển</h2>
           </div>
           <p className="text-lg text-muted-foreground mb-8">
-            Dự án được phát triển bởi:
+            Dự án được phát triển bởi: <span className="font-bold text-accent">DLL Team</span>
           </p>
           <TeamTable />
         </div>
