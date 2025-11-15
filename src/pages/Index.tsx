@@ -1,6 +1,8 @@
 import { Link } from 'react-router-dom';
-import { FileText, Calendar, CheckCircle, Sparkles, Users } from 'lucide-react';
+import { FileText, Calendar, CheckCircle, Sparkles, Users, Package } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { TeamTable } from '@/components/TeamTable';
+import { SoftwareInfo } from '@/components/SoftwareInfo';
 
 const Index = () => {
   return (
@@ -102,25 +104,29 @@ const Index = () => {
 
       {/* Team Credits */}
       <section className="container mx-auto px-6 py-16 border-t border-border">
-        <div className="text-center max-w-3xl mx-auto">
+        <div className="text-center max-w-4xl mx-auto">
           <div className="inline-flex items-center gap-2 mb-6">
             <Users className="h-6 w-6 text-accent" />
             <h2 className="text-2xl font-mono font-bold text-foreground">Đội ngũ phát triển</h2>
           </div>
-          <p className="text-lg text-muted-foreground mb-4">
+          <p className="text-lg text-muted-foreground mb-8">
             Dự án được phát triển bởi:
           </p>
-          <div className="flex flex-wrap justify-center gap-4">
-            <div className="px-6 py-3 bg-card border border-border rounded-lg">
-              <span className="text-lg font-semibold text-accent">Kiều Đức Duy</span>
-            </div>
-            <div className="px-6 py-3 bg-card border border-border rounded-lg">
-              <span className="text-lg font-semibold text-accent">Lưu Hương Ly</span>
-            </div>
-            <div className="px-6 py-3 bg-card border border-border rounded-lg">
-              <span className="text-lg font-semibold text-accent">Phạm Đức Long</span>
-            </div>
+          <TeamTable />
+        </div>
+      </section>
+
+      {/* Software Info */}
+      <section className="container mx-auto px-6 py-16 border-t border-border">
+        <div className="text-center max-w-4xl mx-auto">
+          <div className="inline-flex items-center gap-2 mb-6">
+            <Package className="h-6 w-6 text-accent" />
+            <h2 className="text-2xl font-mono font-bold text-foreground">Thông tin phần mềm sử dụng</h2>
           </div>
+          <p className="text-lg text-muted-foreground mb-8">
+            Click vào từng công nghệ để xem chi tiết:
+          </p>
+          <SoftwareInfo />
         </div>
       </section>
 
