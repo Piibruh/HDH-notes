@@ -99,10 +99,8 @@ export const Sidebar = () => {
         {/* Credits */}
         <div className="p-4 border-t border-sidebar-border bg-card">
           <p className="text-xs text-muted-foreground mb-2">Developed by:</p>
-          <p className="text-sm font-medium">
-            <span className="text-accent">Kiều Đức Duy</span>,{' '}
-            <span className="text-accent">Lưu Hương Ly</span>,{' '}
-            <span className="text-accent">Phạm Đức Long</span>
+          <p className="text-sm font-medium text-accent">
+            DLL Team
           </p>
         </div>
       </aside>
