@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { Calendar, Clock } from 'lucide-react';
+import { Calendar, Clock, User } from 'lucide-react';
 import { Switch } from '@/components/ui/switch';
 import { useState } from 'react';
 
@@ -9,6 +9,7 @@ interface NoteCardProps {
   excerpt: string;
   date: string;
   readTime: string;
+  author?: string;
   completed?: boolean;
   onToggleComplete?: () => void;
 }
@@ -18,7 +19,8 @@ export const NoteCard = ({
   title, 
   excerpt, 
   date, 
-  readTime, 
+  readTime,
+  author = 'DLL Team',
   completed = false,
   onToggleComplete 
 }: NoteCardProps) => {
@@ -58,7 +60,11 @@ export const NoteCard = ({
       }`}>
         {excerpt}
       </p>
-      <div className="flex items-center gap-4 text-sm text-muted-foreground">
+      <div className="flex items-center gap-4 text-sm text-muted-foreground flex-wrap">
+        <div className="flex items-center gap-1">
+          <User className="h-4 w-4 text-accent" />
+          <span className="font-medium text-accent">{author}</span>
+        </div>
         <div className="flex items-center gap-1">
           <Calendar className="h-4 w-4" />
           <span>{date}</span>
