@@ -2,7 +2,7 @@ import { useParams, Link, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Edit, Calendar, Clock, CheckCircle, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
-import { useNotes } from '@/contexts/NotesContext';
+import { useNotes } from '@/contexts';
 
 const NoteDetail = () => {
   const { id } = useParams();
