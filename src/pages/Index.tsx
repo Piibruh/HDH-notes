@@ -1,10 +1,73 @@
 import { Link } from 'react-router-dom';
-import { FileText, Calendar, CheckCircle, Sparkles, Users, Package } from 'lucide-react';
+import { FileText, Calendar, CheckCircle, Sparkles, Users, Package, ExternalLink } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { TeamTable } from '@/components/TeamTable';
-import { SoftwareInfo } from '@/components/SoftwareInfo';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { useState } from 'react';
+
+// Team members data
+const teamMembers = [
+  { name: "Kiều Đức Duy", studentId: "22A1201D0073" },
+  { name: "Lưu Hương Ly", studentId: "22A1201D0073" },
+  { name: "Phạm Đức Long", studentId: "22A1201D0073" },
+];
+
+// Software info data
+interface Software {
+  name: string;
+  icon: React.ReactNode;
+  description: string;
+  details: string;
+  version?: string;
+}
+
+const softwareList: Software[] = [
+  {
+    name: "React",
+    icon: <FileText className="h-8 w-8 text-accent" />,
+    description: "Thư viện JavaScript để xây dựng giao diện người dùng",
+    details: "React giúp tạo các component tái sử dụng và quản lý state hiệu quả. Được phát triển bởi Facebook, React là một trong những thư viện phổ biến nhất cho việc xây dựng Single Page Applications.",
+    version: "18.3.1"
+  },
+  {
+    name: "TypeScript",
+    icon: <FileText className="h-8 w-8 text-accent" />,
+    description: "Ngôn ngữ lập trình mở rộng của JavaScript",
+    details: "TypeScript thêm kiểu tĩnh vào JavaScript, giúp phát hiện lỗi sớm hơn trong quá trình phát triển và cải thiện khả năng bảo trì code.",
+    version: "5.x"
+  },
+  {
+    name: "Vite",
+    icon: <Sparkles className="h-8 w-8 text-accent" />,
+    description: "Build tool hiện đại và cực nhanh",
+    details: "Vite cung cấp trải nghiệm phát triển nhanh chóng với Hot Module Replacement (HMR) tức thì và build production tối ưu.",
+    version: "Latest"
+  },
+  {
+    name: "Tailwind CSS",
+    icon: <Package className="h-8 w-8 text-accent" />,
+    description: "Framework CSS utility-first",
+    details: "Tailwind CSS cho phép xây dựng giao diện nhanh chóng với các utility class có sẵn, giúp tùy biến dễ dàng và giảm CSS dư thừa.",
+    version: "3.x"
+  },
+  {
+    name: "Shadcn UI",
+    icon: <Package className="h-8 w-8 text-accent" />,
+    description: "Bộ component UI đẹp và có thể tùy chỉnh",
+    details: "Shadcn UI cung cấp các component React được thiết kế đẹp mắt, accessibility tốt và dễ dàng tùy chỉnh theo design system của bạn.",
+  },
+  {
+    name: "TipTap",
+    icon: <FileText className="h-8 w-8 text-accent" />,
+    description: "Rich text editor mạnh mẽ",
+    details: "TipTap là một headless editor framework cho web, cung cấp trải nghiệm soạn thảo văn bản phong phú với nhiều extension và khả năng tùy biến cao.",
+    version: "3.10.5"
+  },
+];
 
 const Index = () => {
+  const [selectedSoftware, setSelectedSoftware] = useState<Software | null>(null);
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-accent/5">
       {/* Header */}
@@ -112,7 +175,30 @@ const Index = () => {
           <p className="text-lg text-muted-foreground mb-8">
             Dự án được phát triển bởi: <span className="font-bold text-accent">DLL Team</span>
           </p>
-          <TeamTable />
+          
+          {/* Team Table - Inline */}
+          <div className="w-full max-w-2xl mx-auto">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="text-center font-bold text-foreground">Họ và tên</TableHead>
+                  <TableHead className="text-center font-bold text-foreground">Mã sinh viên</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {teamMembers.map((member, index) => (
+                  <TableRow key={index}>
+                    <TableCell className="text-center font-medium text-accent">
+                      {member.name}
+                    </TableCell>
+                    <TableCell className="text-center font-mono text-muted-foreground">
+                      {member.studentId}
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
         </div>
       </section>
 
@@ -126,7 +212,61 @@ const Index = () => {
           <p className="text-lg text-muted-foreground mb-8">
             Click vào từng công nghệ để xem chi tiết:
           </p>
-          <SoftwareInfo />
+          
+          {/* Software Info - Inline */}
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-4 max-w-3xl mx-auto">
+            {softwareList.map((software, index) => (
+              <button
+                key={index}
+                onClick={() => setSelectedSoftware(software)}
+                className="bg-card hover:bg-accent/10 border border-border rounded-lg p-6 transition-all hover:scale-105 hover:shadow-lg flex flex-col items-center gap-3"
+              >
+                {software.icon}
+                <span className="font-mono font-semibold text-foreground text-center">
+                  {software.name}
+                </span>
+              </button>
+            ))}
+          </div>
+
+          {/* Software Details Dialog */}
+          <Dialog open={!!selectedSoftware} onOpenChange={() => setSelectedSoftware(null)}>
+            <DialogContent className="max-w-2xl">
+              <DialogHeader>
+                <div className="flex items-center gap-3 mb-2">
+                  {selectedSoftware?.icon}
+                  <DialogTitle className="font-mono text-2xl text-accent">
+                    {selectedSoftware?.name}
+                  </DialogTitle>
+                </div>
+                <DialogDescription className="text-base">
+                  {selectedSoftware?.description}
+                </DialogDescription>
+              </DialogHeader>
+              <div className="space-y-4 pt-4">
+                <p className="text-muted-foreground leading-relaxed">
+                  {selectedSoftware?.details}
+                </p>
+                {selectedSoftware?.version && (
+                  <div className="bg-accent/10 border border-accent/20 rounded-lg p-3">
+                    <p className="text-sm">
+                      <span className="font-semibold text-accent">Phiên bản: </span>
+                      <span className="font-mono text-foreground">{selectedSoftware.version}</span>
+                    </p>
+                  </div>
+                )}
+                <a
+                  href="https://docs.lovable.dev/features/cloud"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 text-accent hover:underline text-sm"
+                >
+                  Tìm hiểu thêm
+                  <ExternalLink className="h-4 w-4" />
+                </a>
+              </div>
+            </DialogContent>
+          </Dialog>
         </div>
       </section>
 
