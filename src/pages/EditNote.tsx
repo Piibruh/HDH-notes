@@ -10,9 +10,9 @@ import { format } from 'date-fns';
 import { vi } from 'date-fns/locale';
 import { useToast } from '@/hooks/use-toast';
 import RichTextEditor from '@/components/RichTextEditor';
-import { useNotes } from '@/contexts/NotesContext';
+import { useNotes } from '@/contexts';
 import { Link } from 'react-router-dom';
-import { useAutoSave } from '@/hooks/useAutoSave';
+import { useAutoSave } from '@/hooks';
 
 const EditNote = () => {
   const { id } = useParams();

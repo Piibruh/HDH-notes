@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { ChevronLeft, ChevronRight, FileText } from 'lucide-react';
-import { useNotes } from '@/contexts/NotesContext';
+import { useNotes } from '@/contexts';
 import { Link } from 'react-router-dom';
 
 const Calendar = () => {

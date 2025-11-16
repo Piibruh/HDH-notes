@@ -1,10 +1,33 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState, forwardRef } from 'react';
+import { useNavigate, NavLink as RouterNavLink, NavLinkProps, useLocation } from 'react-router-dom';
 import { Home, Calendar, CheckSquare, User, PlusCircle, LogOut, Sun, Moon, Menu } from 'lucide-react';
-import { NavLink } from './NavLink';
-import { useTheme } from '@/contexts/ThemeContext';
-import { useUser } from '@/contexts/UserContext';
+import { useTheme, useUser } from '@/contexts';
 import { useToast } from '@/hooks/use-toast';
+import { cn } from '@/lib/utils';
+
+// NavLink component inline
+interface NavLinkCompatProps extends Omit<NavLinkProps, "className"> {
+  className?: string;
+  activeClassName?: string;
+  pendingClassName?: string;
+}
+
+const NavLink = forwardRef<HTMLAnchorElement, NavLinkCompatProps>(
+  ({ className, activeClassName, pendingClassName, to, ...props }, ref) => {
+    return (
+      <RouterNavLink
+        ref={ref}
+        to={to}
+        className={({ isActive, isPending }) =>
+          cn(className, isActive && activeClassName, isPending && pendingClassName)
+        }
+        {...props}
+      />
+    );
+  },
+);
+
+NavLink.displayName = "NavLink";
 
 interface LayoutProps {
   children: React.ReactNode;

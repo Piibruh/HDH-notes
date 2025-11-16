@@ -3,7 +3,7 @@ import { RotateCcw, Trash2, Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
-import { useNotes } from '@/contexts/NotesContext';
+import { useNotes } from '@/contexts';
 
 const Completed = () => {
   const { toast } = useToast();
