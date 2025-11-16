@@ -4,8 +4,8 @@ import { Search, TrendingUp, Calendar, Clock, User } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
 import { useToast } from '@/hooks/use-toast';
-import { useUser } from '@/contexts';
-import { useNotes } from '@/contexts';
+import { useUser } from '@/contexts/UserContext';
+import { useNotes } from '@/contexts/NotesContext';
 
 // NoteCard component inline
 interface NoteCardProps {
