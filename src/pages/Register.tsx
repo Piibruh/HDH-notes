@@ -1,12 +1,10 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { UserPlus } from "lucide-react";
+import { UserPlus, FileText } from "lucide-react";
 import { toast } from "sonner";
 
 const Register = () => {
@@ -46,7 +44,20 @@ const Register = () => {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <Header />
+      {/* Header */}
+      <header className="border-b border-border bg-card/50 backdrop-blur-sm">
+        <div className="container mx-auto px-6 py-4 flex items-center justify-between">
+          <Link to="/welcome" className="flex items-center gap-2">
+            <FileText className="h-8 w-8 text-accent" />
+            <h1 className="text-2xl font-mono font-bold text-accent">HDH Note</h1>
+          </Link>
+          <Link to="/login">
+            <Button variant="outline" className="border-accent text-accent">
+              Đăng nhập
+            </Button>
+          </Link>
+        </div>
+      </header>
       
       <main className="flex-1 container mx-auto px-4 py-12 flex items-center justify-center">
         <Card className="w-full max-w-md">
@@ -132,7 +143,14 @@ const Register = () => {
         </Card>
       </main>
 
-      <Footer />
+      {/* Footer */}
+      <footer className="border-t border-border bg-card/50 backdrop-blur-sm py-8">
+        <div className="container mx-auto px-6 text-center">
+          <p className="text-muted-foreground">
+            © 2025 HDH Note. Developed by <span className="text-accent font-medium">DLL Team</span>
+          </p>
+        </div>
+      </footer>
     </div>
   );
 };

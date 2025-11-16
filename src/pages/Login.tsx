@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Sparkles } from 'lucide-react';
+import { Sparkles, FileText } from 'lucide-react';
 import { useUser } from '@/contexts/UserContext';
 import { useToast } from '@/hooks/use-toast';
 
@@ -40,8 +40,25 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background p-4">
-      <div className="w-full max-w-md">
+    <div className="min-h-screen flex flex-col bg-background">
+      {/* Header */}
+      <header className="border-b border-border bg-card/50 backdrop-blur-sm">
+        <div className="container mx-auto px-6 py-4 flex items-center justify-between">
+          <Link to="/welcome" className="flex items-center gap-2">
+            <FileText className="h-8 w-8 text-accent" />
+            <h1 className="text-2xl font-mono font-bold text-accent">HDH Note</h1>
+          </Link>
+          <Link to="/register">
+            <Button variant="outline" className="border-accent text-accent">
+              Đăng ký
+            </Button>
+          </Link>
+        </div>
+      </header>
+
+      {/* Main Content */}
+      <div className="flex-1 flex items-center justify-center p-4">
+        <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <h1 className="text-4xl font-mono font-bold text-accent mb-2">HDH Note</h1>
           <p className="text-muted-foreground">Đăng nhập vào tài khoản của bạn</p>
@@ -111,6 +128,16 @@ const Login = () => {
           </form>
         </div>
       </div>
+    </div>
+
+      {/* Footer */}
+      <footer className="border-t border-border bg-card/50 backdrop-blur-sm py-8">
+        <div className="container mx-auto px-6 text-center">
+          <p className="text-muted-foreground">
+            © 2025 HDH Note. Developed by <span className="text-accent font-medium">DLL Team</span>
+          </p>
+        </div>
+      </footer>
     </div>
   );
 };
